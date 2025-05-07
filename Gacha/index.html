@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Gacha Experiment (One-Pull-Per-Correct-Answer)</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    button {
+      margin: 10px 5px;
+      padding: 10px 20px;
+      font-size: 16px;
+    }
+    #pullButton {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎰 Gacha Experiment</h1>
+  <p>You can pull the gacha up to <strong>10 times</strong>.  
+  To earn each pull, solve a new multiplication problem first.</p>
+
+  <!-- Math Challenge -->
+  <h2>Math Challenge</h2>
+  <p id="mathProblem">-- × --</p>
+  <input type="number" id="mathAnswer" placeholder="Enter your answer" />
+  <button onclick="checkMathAnswer()">✅ Submit Answer</button>
+
+  <br />
+  <button id="pullButton" onclick="pullGacha()">🎁 Pull Gacha</button>
+  <button onclick="endSession()">🚪 Stop</button>
+
+  <h2>Results:</h2>
+  <ul id="resultList"></ul>
+  <p><strong>Total pulls:</strong> <span id="pullCount">0</span></p>
+
+  <script>
+    let pullCount = 0;
+    let results = [];
+    const maxPulls = 10;
+
+    let num1, num2, correctAnswer;
+
+    window.onload = function () {
+      generateMathProblem();
+    };
+
+    function generateMathProblem() {
+      num1 = Math.floor(Math.random() * 90) + 10; // 10–99
+      num2 = Math.floor(Math.random() * 90) + 10;
+      correctAnswer = num1 * num2;
+      document.getElementById("mathProblem").textContent = `${num1} × ${num2}`;
+      document.getElementById("mathAnswer").value = "";
+      document.getElementById("pullButton").style.display = "none"; // 每轮先隐藏按钮
+    }
+
+    function checkMathAnswer() {
+      const userAnswer = parseInt(document.getElementById("mathAnswer").value);
+      if (userAnswer === correctAnswer) {
+        alert("✅ Correct! You may now pull once.");
+        document.getElementById("pullButton").style.display = "inline-block";
+      } else {
+        alert("❌ Incorrect. Try again.");
+      }
+    }
+
+    function pullGacha() {
+      if (pullCount >= maxPulls) {
+        alert("You have reached the maximum number of pulls (10).");
+        return;
+      }
+
+      const roll = Math.random() * 100;
+      let result = "";
+
+      if (roll < 60) {
+        result = "Common";
+      } else if (roll < 85) {
+        result = "Uncommon";
+      } else if (roll < 99) {
+        result = "Rare";
+      } else {
+        result = "Super Rare"; // 1% chance
+      }
+
+      pullCount++;
+      results.push(result);
+
+      document.getElementById("pullCount").textContent = pullCount;
+      const list = document.getElementById("resultList");
+      const item = document.createElement("li");
+      item.textContent = `Pull ${pullCount}: ${result}`;
+      list.appendChild(item);
+
+      // 抽完后自动隐藏按钮，生成新题
+      document.getElementById("pullButton").style.display = "none";
+      generateMathProblem();
+    }
+
+    function endSession() {
+      alert(`Session complete!\nTotal pulls: ${pullCount}\nResults:\n${results.join(", ")}`);
+    }
+  </script>
+</body>
+</html>
